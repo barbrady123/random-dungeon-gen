@@ -44,7 +44,7 @@ public class Player : MonoBehaviour
         }
 
         // Seems like there could be a race condition here, probably should test at least one additional time during the movement process?
-        if (!TestCollision(targetDest))
+        if (!Global.TestTileCollision(targetDest))
         {
             StartCoroutine(SmoothMove(targetDest));
         }
@@ -61,16 +61,5 @@ public class Player : MonoBehaviour
         }
 
         _isMoving = false;
-    }
-
-    private bool TestCollision(Vector3 target)
-    {
-        var hitCollider = Physics2D.OverlapBox(
-            target,
-            Vector3.one * 0.8f,
-            0,
-            LayerMask.GetMask("Wall", "Enemy"));
-
-        return hitCollider != null;
     }
 }

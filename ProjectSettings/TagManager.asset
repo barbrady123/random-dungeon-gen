@@ -12,8 +12,8 @@ TagManager:
   - Water
   - UI
   - Enemy
-  - 
-  - 
+  - Wall
+  - Floor
   - 
   - 
   - 
@@ -38,6 +38,15 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Floor
+    uniqueID: 1676943381
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Character
+    uniqueID: 35070391
+    locked: 0
+  - name: Wall
+    uniqueID: 4048159407
     locked: 0
