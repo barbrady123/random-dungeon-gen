@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +10,7 @@ public class DungeonManager : MonoBehaviour
     public GameObject FloorPrefab;
     public GameObject WallPrefab;
     public GameObject SpawnerPrefab;
+    public GameObject ExitPrefab;
 
     public int MaxTileCount;
 
@@ -28,8 +31,13 @@ public class DungeonManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            GenerateDungeon();
         }
+    }
+
+    public void GenerateDungeon()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private void RandomWalker()
@@ -45,8 +53,20 @@ public class DungeonManager : MonoBehaviour
 
         foreach (var floor in floorList)
         {
-            TileSpawner.CreateTile(this.SpawnerPrefab, floor, this);
+            TileSpawner.Create(GetTilePrefab(PrefabType.Spawner), floor, this);
         }
+
+        StartCoroutine(AfterSpawnersDestroyed(floorList));
+    }
+
+    private IEnumerator AfterSpawnersDestroyed(IEnumerable<Vector3> floorList)
+    {
+        while (FindFirstObjectByType<TileSpawner>() != null)
+        {
+            yield return null;
+        }
+
+        TileSpawner.Create(GetTilePrefab(PrefabType.Exit), floorList.Last(), this);
     }
 
     public GameObject GetTilePrefab(PrefabType type)
@@ -56,6 +76,7 @@ public class DungeonManager : MonoBehaviour
             PrefabType.Floor => this.FloorPrefab,
             PrefabType.Wall => this.WallPrefab,
             PrefabType.Spawner => this.SpawnerPrefab,
+            PrefabType.Exit => this.ExitPrefab,
             _ => throw new Exception($"Invalid prefab requested '{type}'")
         };
     }

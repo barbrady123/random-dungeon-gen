@@ -11,5 +11,7 @@ public enum PrefabType
 
     Wall = 1,
 
-    Spawner = 2
+    Spawner = 2,
+
+    Exit = 3
 }

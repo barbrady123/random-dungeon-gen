@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class Extensions
@@ -10,4 +12,6 @@ public static class Extensions
             return 1;
         return 0;
     }
+
+    public static T ChooseRandomElement<T>(this IEnumerable<T> set) => set.Skip(Random.Range(0, set.Count())).Single();
 }

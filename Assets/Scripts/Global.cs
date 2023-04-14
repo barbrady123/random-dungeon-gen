@@ -31,6 +31,11 @@ public static class Global
         }
     }
 
+    public static class Tags
+    {
+        public const string Player = "Player";
+    }
+
     public static bool TestTileCollision(Vector3 target, LayerMaskType type = LayerMaskType.Default)
     {
         return Physics2D.OverlapBox(

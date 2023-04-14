@@ -170,7 +170,8 @@ MonoBehaviour:
   FloorPrefab: {fileID: 5504445295643588459, guid: 05de6e97297cad04cb6465b695c437f1, type: 3}
   WallPrefab: {fileID: 8156861866151196375, guid: 8578f20b739a93b4694e20e07ab354c2, type: 3}
   SpawnerPrefab: {fileID: 1168290092480908291, guid: b609f76dd4020e9408e280987472702f, type: 3}
-  MaxTileCount: 500
+  ExitPrefab: {fileID: 6205692750246709290, guid: e0e36a7fe1db33640a1f1bbd97b31293, type: 3}
+  MaxTileCount: 20
 --- !u!1001 &6230558745720223507
 PrefabInstance:
   m_ObjectHideFlags: 0
