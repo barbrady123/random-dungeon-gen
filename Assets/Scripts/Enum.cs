@@ -5,9 +5,11 @@ public enum LayerMaskType
     WallFloor = 1
 }
 
-public enum TilePrefabType
+public enum PrefabType
 {
     Floor = 0,
 
-    Wall = 1
+    Wall = 1,
+
+    Spawner = 2
 }
