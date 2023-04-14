@@ -12,15 +12,17 @@ public class DungeonManager : MonoBehaviour
     public GameObject SpawnerPrefab;
     public GameObject ExitPrefab;
 
-    public int MaxTileCount;
+    [Range(20, 1000)] public int MaxTileCount;
+    [Range(0, 100)] public int RandomItemChance;
 
-    private HashSet<Vector3> floorList = null;
+    public GameObject[] RandomItems;
 
-    // Do we need these public?
-    private float MinX { get; set; } = float.MaxValue;
-    private float MaxX { get; set; } = float.MaxValue;
-    private float MinY { get; set; } = float.MinValue;
-    private float MaxY { get; set; } = float.MinValue;
+    private HashSet<Vector3> _floorList = null;
+
+    private int MinX { get; set; } = Int32.MaxValue;
+    private int MaxX { get; set; } = Int32.MaxValue;
+    private int MinY { get; set; } = Int32.MinValue;
+    private int MaxY { get; set; } = Int32.MinValue;
 
     private void Start()
     {
@@ -43,20 +45,20 @@ public class DungeonManager : MonoBehaviour
     private void RandomWalker()
     {
         var currentPos = Vector3.zero;
-        floorList = new HashSet<Vector3> { currentPos };
+        _floorList = new HashSet<Vector3> { currentPos };
 
-        while (floorList.Count < this.MaxTileCount)
+        while (_floorList.Count < this.MaxTileCount)
         {
             currentPos += GetRandomDirectionVector();
-            floorList.Add(currentPos);
+            _floorList.Add(currentPos);
         }
 
-        foreach (var floor in floorList)
+        foreach (var floor in _floorList)
         {
             TileSpawner.Create(GetTilePrefab(PrefabType.Spawner), floor, this);
         }
 
-        StartCoroutine(AfterSpawnersDestroyed(floorList));
+        StartCoroutine(AfterSpawnersDestroyed(_floorList));
     }
 
     private IEnumerator AfterSpawnersDestroyed(IEnumerable<Vector3> floorList)
@@ -67,6 +69,19 @@ public class DungeonManager : MonoBehaviour
         }
 
         TileSpawner.Create(GetTilePrefab(PrefabType.Exit), floorList.Last(), this);
+
+        foreach (var floor in floorList.Skip(1).SkipLast(1))
+        {
+            if (UnityEngine.Random.Range(0, 100) < this.RandomItemChance)
+            {
+                AddRandomItem(floor);
+            }
+        }
+    }
+
+    private void AddRandomItem(Vector3 position)
+    {
+        Instantiate(RandomItems.ChooseRandomElement(), position, Quaternion.identity);
     }
 
     public GameObject GetTilePrefab(PrefabType type)
@@ -83,10 +98,10 @@ public class DungeonManager : MonoBehaviour
 
     public void SetMinMaxDimensions(Vector3 location)
     {
-        this.MinX = this.MinX <= location.x ? this.MinX : location.x;
-        this.MinY = this.MinY <= location.y ? this.MinY : location.y;
-        this.MaxX = this.MaxX >= location.x ? this.MaxX : location.x;
-        this.MaxY = this.MaxY >= location.y ? this.MaxY : location.y;
+        this.MinX = this.MinX <= location.x ? this.MinX : (int)location.x;
+        this.MinY = this.MinY <= location.y ? this.MinY : (int)location.y;
+        this.MaxX = this.MaxX >= location.x ? this.MaxX : (int)location.x;
+        this.MaxY = this.MaxY >= location.y ? this.MaxY : (int)location.y;
     }
 
     private Vector3 GetRandomDirectionVector()

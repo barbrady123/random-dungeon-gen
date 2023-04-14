@@ -13,5 +13,5 @@ public static class Extensions
         return 0;
     }
 
-    public static T ChooseRandomElement<T>(this IEnumerable<T> set) => set.Skip(Random.Range(0, set.Count())).Single();
+    public static T ChooseRandomElement<T>(this IEnumerable<T> set) => set.Skip(Random.Range(0, set.Count())).First();
 }

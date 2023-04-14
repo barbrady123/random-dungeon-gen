@@ -171,7 +171,14 @@ MonoBehaviour:
   WallPrefab: {fileID: 8156861866151196375, guid: 8578f20b739a93b4694e20e07ab354c2, type: 3}
   SpawnerPrefab: {fileID: 1168290092480908291, guid: b609f76dd4020e9408e280987472702f, type: 3}
   ExitPrefab: {fileID: 6205692750246709290, guid: e0e36a7fe1db33640a1f1bbd97b31293, type: 3}
-  MaxTileCount: 20
+  MaxTileCount: 1000
+  RandomItemChance: 5
+  RandomItems:
+  - {fileID: 8887553590837534458, guid: 2855e62e81642db449161df982f2c97a, type: 3}
+  - {fileID: 4588814684959553499, guid: 5824dfb92f6faa242b8cbc560f1b6a16, type: 3}
+  - {fileID: 8714989676815427938, guid: 3c7456e791cd84548b05eeb70ef4e4af, type: 3}
+  - {fileID: 8094955011619317119, guid: 52332394565ab2048b1267a0220c4eab, type: 3}
+  - {fileID: 6019413805134537720, guid: e118934203f86954e8a82d117fc69976, type: 3}
 --- !u!1001 &6230558745720223507
 PrefabInstance:
   m_ObjectHideFlags: 0
