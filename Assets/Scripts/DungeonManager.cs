@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class DungeonManager : MonoBehaviour
 {
@@ -13,20 +14,30 @@ public class DungeonManager : MonoBehaviour
     public GameObject ExitPrefab;
 
     [Range(20, 1000)] public int MaxTileCount;
+    
     [Range(0, 100)] public int RandomItemChance;
+    [Range(0, 100)] public int RandomEnemyChance;
 
     public GameObject[] RandomItems;
+    public GameObject[] RandomEnemies;
+    public GameObject[] WallTrims;
 
-    private HashSet<Vector3> _floorList = null;
+    public DungeonType DungeonType;
 
-    private int MinX { get; set; } = Int32.MaxValue;
-    private int MaxX { get; set; } = Int32.MaxValue;
-    private int MinY { get; set; } = Int32.MinValue;
-    private int MaxY { get; set; } = Int32.MinValue;
+    private int MinX { get; set; }
+    private int MaxX { get; set; }
+    private int MinY { get; set; }
+    private int MaxY { get; set; }
+
+    private Dictionary<Vector3, PrefabType> _tiles = null;
 
     private void Start()
     {
-        RandomWalker();
+        switch (this.DungeonType)
+        {
+            case DungeonType.Caverns :  RandomWalker(); break;
+            case DungeonType.Rooms :    RoomWalker();   break;
+        }
     }
 
     private void Update()
@@ -42,49 +53,169 @@ public class DungeonManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    private void RoomWalker()
+    {
+        var currentPos = Vector3.zero;
+        _tiles = new Dictionary<Vector3, PrefabType>();
+
+        var prevDir = Vector3.zero;
+        var dir = Vector3.zero;
+
+        while (_tiles.Count < this.MaxTileCount)
+        {
+            do
+            {
+                dir = GetRandomDirectionVector();
+            }
+            while (prevDir + dir == Vector3.zero);
+            
+            prevDir = dir;
+
+            int walkLen = Random.Range(9, 18);
+
+            for (int x = 0; x < walkLen; x++)
+            {
+                if (_tiles.TryAdd(currentPos, PrefabType.Floor))
+                {
+                    DungeonManager.CreatePrefab(PrefabType.Spawner, currentPos, this);
+                    SetMinMaxDimensions(currentPos);
+                }
+
+                currentPos += dir;
+            }
+
+            GenerateRoom(currentPos);
+        }
+        
+        PadMinMaxDimensions(1);
+
+        StartCoroutine(AfterSpawnersDestroyed());
+    }
+
+    private void GenerateRoom(Vector3 center)
+    {
+        int roomWidth = Random.Range(1, 5);
+        int roomHeight = Random.Range(1, 5);
+
+        for (int y = -roomHeight; y <= roomHeight; y++)
+        {
+            for (int x = -roomWidth; x <= roomWidth; x++)
+            {
+                var roomPos = new Vector3(center.x + x, center.y + y, center.z);
+
+                if (_tiles.TryAdd(roomPos, PrefabType.Floor))
+                {
+                    DungeonManager.CreatePrefab(PrefabType.Spawner, roomPos, this);
+                    SetMinMaxDimensions(roomPos);
+                }
+            }
+        }
+    }
+
     private void RandomWalker()
     {
         var currentPos = Vector3.zero;
-        _floorList = new HashSet<Vector3> { currentPos };
+        _tiles = new Dictionary<Vector3, PrefabType>();
 
-        while (_floorList.Count < this.MaxTileCount)
-        {
+        while (_tiles.Count < this.MaxTileCount)
+        {           
+            if (_tiles.TryAdd(currentPos, PrefabType.Floor))
+            {
+                DungeonManager.CreatePrefab(PrefabType.Spawner, currentPos, this);
+                SetMinMaxDimensions(currentPos);
+            }
+
             currentPos += GetRandomDirectionVector();
-            _floorList.Add(currentPos);
         }
+        
+        PadMinMaxDimensions(1);
 
-        foreach (var floor in _floorList)
-        {
-            TileSpawner.Create(GetTilePrefab(PrefabType.Spawner), floor, this);
-        }
-
-        StartCoroutine(AfterSpawnersDestroyed(_floorList));
+        StartCoroutine(AfterSpawnersDestroyed());
     }
 
-    private IEnumerator AfterSpawnersDestroyed(IEnumerable<Vector3> floorList)
+    private IEnumerator AfterSpawnersDestroyed()
     {
+        // Wait for walls to finish...
         while (FindFirstObjectByType<TileSpawner>() != null)
         {
             yield return null;
         }
 
-        TileSpawner.Create(GetTilePrefab(PrefabType.Exit), floorList.Last(), this);
+        FindWallTiles();
 
-        foreach (var floor in floorList.Skip(1).SkipLast(1))
+        // Exit...
+        var exitCoords = _tiles.Where(x => (x.Value == PrefabType.Floor) && (x.Key != Vector3.zero)).ChooseRandomElement().Key;
+        DungeonManager.CreatePrefab(PrefabType.Exit, exitCoords, this);
+
+        var floorTiles = _tiles.Where(x => x.Value == PrefabType.Floor).Select(x => x.Key).ToArray();
+        var wallTiles = _tiles.Where(x => x.Value == PrefabType.Wall).Select(x => x.Key).ToArray();
+
+        // Wall Trim...
+        foreach (var wall in wallTiles)
         {
-            if (UnityEngine.Random.Range(0, 100) < this.RandomItemChance)
+            int trimIndex = 0;
+            
+            /*
+            trimIndex += floorTiles.Contains(new Vector3(wall.x, wall.y + 1, wall.z)) ? 1 : 0;
+            trimIndex += floorTiles.Contains(new Vector3(wall.x + 1, wall.y, wall.z)) ? 2 : 0;
+            trimIndex += floorTiles.Contains(new Vector3(wall.x, wall.y - 1, wall.z)) ? 4 : 0;
+            trimIndex += floorTiles.Contains(new Vector3(wall.x - 1, wall.y, wall.z)) ? 8 : 0;
+            */
+
+            trimIndex += !wallTiles.Contains(new Vector3(wall.x, wall.y + 1, wall.z)) ? 1 : 0;
+            trimIndex += !wallTiles.Contains(new Vector3(wall.x + 1, wall.y, wall.z)) ? 2 : 0;
+            trimIndex += !wallTiles.Contains(new Vector3(wall.x, wall.y - 1, wall.z)) ? 4 : 0;
+            trimIndex += !wallTiles.Contains(new Vector3(wall.x - 1, wall.y, wall.z)) ? 8 : 0;
+
+            CreateWallTrim(trimIndex, wall);
+        }
+
+        // Items...
+        var itemLocs = new List<Vector3> { new Vector3(0f, 0f, transform.position.z) };
+
+        foreach (var floor in floorTiles.Except(new[] { Vector3.zero, exitCoords }))
+        {            
+            if (Global.Random.Success(this.RandomItemChance))
             {
-                AddRandomItem(floor);
+                itemLocs.Add(AddRandomItem(floor).transform.position);
+            }
+        }
+
+        // Enemies...
+        var openFloorList = floorTiles.Except(itemLocs).Except(new[] { Vector3.zero, exitCoords }).ToArray();
+
+        foreach (var openFloor in openFloorList)
+        {
+            if (Global.Random.Success(this.RandomEnemyChance))
+            {
+                AddRandomEnemy(openFloor);
             }
         }
     }
 
-    private void AddRandomItem(Vector3 position)
+    private void FindWallTiles()
     {
-        Instantiate(RandomItems.ChooseRandomElement(), position, Quaternion.identity);
+        for (int y = MinY; y <= MaxY; y++)
+        {
+            for (int x = MinX; x <= MaxX; x++)
+            {
+                var testPos = new Vector3(x, y, transform.position.z);
+                if (Global.TestTileCollision(testPos, LayerMaskType.Wall))
+                {
+                    if (!_tiles.TryAdd(testPos, PrefabType.Wall))
+                    {
+                        throw new Exception($"Duplicate tile position found while scanning for walls ({x}, {y})");
+                    }
+                }
+            }
+        }
     }
 
-    public GameObject GetTilePrefab(PrefabType type)
+    private GameObject AddRandomItem(Vector3 position) => Instantiate(RandomItems.ChooseRandomElement(), position, Quaternion.identity);
+
+    private GameObject AddRandomEnemy(Vector3 position) => Instantiate(RandomEnemies.ChooseRandomElement(), position, Quaternion.identity);
+
+    public GameObject GetPrefab(PrefabType type)
     {
         return type switch
         {
@@ -96,12 +227,20 @@ public class DungeonManager : MonoBehaviour
         };
     }
 
-    public void SetMinMaxDimensions(Vector3 location)
+    private void SetMinMaxDimensions(Vector3 location)
     {
         this.MinX = this.MinX <= location.x ? this.MinX : (int)location.x;
         this.MinY = this.MinY <= location.y ? this.MinY : (int)location.y;
         this.MaxX = this.MaxX >= location.x ? this.MaxX : (int)location.x;
         this.MaxY = this.MaxY >= location.y ? this.MaxY : (int)location.y;
+    }
+
+    private void PadMinMaxDimensions(int padding)
+    {
+        this.MinX -= padding;
+        this.MinY -= padding;
+        this.MaxX += padding;
+        this.MaxY += padding;
     }
 
     private Vector3 GetRandomDirectionVector()
@@ -114,5 +253,24 @@ public class DungeonManager : MonoBehaviour
             3 => Vector3.left,
             _ => Vector3.zero   // Impossible
         };
+    }
+
+    private GameObject CreateWallTrim(int trimIndex, Vector3 position)
+    {
+        if (trimIndex <= 0)
+            return null;
+
+        var prefab = this.WallTrims[trimIndex];
+        var obj = Instantiate(prefab, position, Quaternion.identity);
+        obj.transform.SetParent(transform);
+        return obj;
+    }
+
+    public static GameObject CreatePrefab(PrefabType type, Vector3 position, DungeonManager dungeonManager)
+    {
+        var prefab = dungeonManager.GetPrefab(type);
+        var obj = Instantiate(prefab, position, Quaternion.identity);
+        obj.transform.SetParent(dungeonManager.transform);
+        return obj;
     }
 }

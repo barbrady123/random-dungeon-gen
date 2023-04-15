@@ -10,9 +10,7 @@ public class TileSpawner : MonoBehaviour
     private void Awake()
     {
         dungeonManager = FindObjectOfType<DungeonManager>();
-        TileSpawner.Create(dungeonManager.GetTilePrefab(PrefabType.Floor), transform.position, dungeonManager);
-
-        dungeonManager.SetMinMaxDimensions(transform.position);
+        DungeonManager.CreatePrefab(PrefabType.Floor, transform.position, dungeonManager);
     }
 
     void Start()
@@ -24,20 +22,12 @@ public class TileSpawner : MonoBehaviour
                 var testPos = new Vector3(transform.position.x + x, transform.position.y + y, transform.position.z);
                 if (!Global.TestTileCollision(testPos, LayerMaskType.WallFloor))
                 {
-                    TileSpawner.Create(dungeonManager.GetTilePrefab(PrefabType.Wall), testPos, dungeonManager);
+                    DungeonManager.CreatePrefab(PrefabType.Wall, testPos, dungeonManager);
                 }
             }
         }
 
         Destroy(gameObject);
-    }
-
-    public static GameObject Create(GameObject tilePrefab, Vector3 position, DungeonManager dungeonManager)
-    {
-        var tile = Instantiate(tilePrefab, position, Quaternion.identity);
-        tile.name = tilePrefab.name;
-        tile.transform.SetParent(dungeonManager.transform);
-        return tile;
     }
 
     private void OnDrawGizmos()

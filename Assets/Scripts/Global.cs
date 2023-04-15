@@ -22,6 +22,10 @@ public static class Global
             {
                 LayerMaskType.WallFloor,
                 new[] { "Wall", "Floor" }
+            },
+            {
+                LayerMaskType.Wall,
+                new[] { "Wall" }
             }
         };
 
@@ -43,5 +47,10 @@ public static class Global
             Vector3.one * 0.9f,
             0,
             LayerMasks.GetLayerMask(type)) != null;
+    }
+
+    public static class Random
+    {
+        public static bool Success(int chance) => UnityEngine.Random.Range(0, 100) < chance;
     }
 }

@@ -172,13 +172,38 @@ MonoBehaviour:
   SpawnerPrefab: {fileID: 1168290092480908291, guid: b609f76dd4020e9408e280987472702f, type: 3}
   ExitPrefab: {fileID: 6205692750246709290, guid: e0e36a7fe1db33640a1f1bbd97b31293, type: 3}
   MaxTileCount: 1000
-  RandomItemChance: 5
+  RandomItemChance: 3
+  RandomEnemyChance: 1
   RandomItems:
   - {fileID: 8887553590837534458, guid: 2855e62e81642db449161df982f2c97a, type: 3}
   - {fileID: 4588814684959553499, guid: 5824dfb92f6faa242b8cbc560f1b6a16, type: 3}
   - {fileID: 8714989676815427938, guid: 3c7456e791cd84548b05eeb70ef4e4af, type: 3}
   - {fileID: 8094955011619317119, guid: 52332394565ab2048b1267a0220c4eab, type: 3}
   - {fileID: 6019413805134537720, guid: e118934203f86954e8a82d117fc69976, type: 3}
+  RandomEnemies:
+  - {fileID: 5387086942347243319, guid: dec7db5888aba094c9377708facdf0d2, type: 3}
+  - {fileID: 2076170991671320619, guid: 81e096c794a987a47ab58e1ddb613125, type: 3}
+  - {fileID: 5521217313915516342, guid: ebcd2473cf2dee84bacdc10048be1a1b, type: 3}
+  - {fileID: 4961516131643787636, guid: 2770a5af880b08a49af730d217b4713a, type: 3}
+  - {fileID: 2117112480387860167, guid: b53c9bb423b80d942aa1555432f105ba, type: 3}
+  WallTrims:
+  - {fileID: 7342792919812745210, guid: e1c4fc50120fe6c46987a26fc7e0f314, type: 3}
+  - {fileID: 5608622726485363168, guid: 71e7c0467a04a9b47ba32a207e1a5c44, type: 3}
+  - {fileID: 6744396256345298217, guid: 7cdb29697d6596d42a10126494bcdc98, type: 3}
+  - {fileID: 3320798362459500131, guid: fed20d8bc7bd84845b71e82d00efff69, type: 3}
+  - {fileID: 7982137671764780359, guid: b973eae01f3243b4da19f84af213dc17, type: 3}
+  - {fileID: 4262233739695758111, guid: 9ac555a1ceb3f5248aca37c94cbf6b8f, type: 3}
+  - {fileID: 8820321304620947250, guid: af88b5cbc089d024b93937ce5dfd8caa, type: 3}
+  - {fileID: 5504923900535166650, guid: 7c15e35154d58544681ca9c38088161f, type: 3}
+  - {fileID: 8267382938175610421, guid: e9a55531f3f2d4d4c84ecc789df50a87, type: 3}
+  - {fileID: 8094064099552642398, guid: f2c89aa21293e8a4fb97e7ffc678053d, type: 3}
+  - {fileID: 8879634609481132029, guid: 81ef635f7073a8b4ba1c3b3fba081548, type: 3}
+  - {fileID: 5107012935329861490, guid: 164b3db324906ef4888aff0560360168, type: 3}
+  - {fileID: 6694685265431016799, guid: b80370d97d52960429dbfd48b72b4fe3, type: 3}
+  - {fileID: 8785003065006604989, guid: 9726a8ff0ea4c424483d877ced298c6c, type: 3}
+  - {fileID: 6113728779043524813, guid: 2340117f4a06dc541b454339d1a31623, type: 3}
+  - {fileID: 3122399800157865747, guid: 9ed3fb532bd50764ea08dfe0e6819d7f, type: 3}
+  DungeonType: 1
 --- !u!1001 &6230558745720223507
 PrefabInstance:
   m_ObjectHideFlags: 0
