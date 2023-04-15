@@ -13,7 +13,7 @@ public class DungeonManager : MonoBehaviour
     public GameObject SpawnerPrefab;
     public GameObject ExitPrefab;
 
-    [Range(20, 1000)] public int MaxTileCount;
+    [Range(200, 10000)] public int MaxTileCount;
     
     [Range(0, 100)] public int RandomItemChance;
     [Range(0, 100)] public int RandomEnemyChance;

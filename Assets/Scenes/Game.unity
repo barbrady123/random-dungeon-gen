@@ -171,7 +171,7 @@ MonoBehaviour:
   WallPrefab: {fileID: 8156861866151196375, guid: 8578f20b739a93b4694e20e07ab354c2, type: 3}
   SpawnerPrefab: {fileID: 1168290092480908291, guid: b609f76dd4020e9408e280987472702f, type: 3}
   ExitPrefab: {fileID: 6205692750246709290, guid: e0e36a7fe1db33640a1f1bbd97b31293, type: 3}
-  MaxTileCount: 1000
+  MaxTileCount: 4267
   RandomItemChance: 3
   RandomEnemyChance: 1
   RandomItems:
